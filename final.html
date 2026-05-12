@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MALIK3</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+        :root { --pink: #fbcce7; --hot-pink: #ff007f; }
+        body { background: #000; color: var(--pink); margin: 0; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; font-family: 'Orbitron', sans-serif; }
+        
+        #void { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 100; display: flex; align-items: center; justify-content: center; transition: opacity 1s; }
+        .prompt { letter-spacing: 10px; animation: pulse 2s infinite; color: var(--pink); text-shadow: 0 0 15px var(--pink); font-size: 0.8rem; text-align: center; }
+        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+        canvas { position: absolute; top: 0; left: 0; z-index: 1; opacity: 0; transition: opacity 2s; }
+        
+        #letter-wrap {
+            position: relative; z-index: 2; width: 85%; max-width: 850px; height: 600px;
+            overflow: hidden; mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+            opacity: 0; transition: 1.5s; pointer-events: none;
+        }
+        #letter-content {
+            position: absolute; top: 100%; width: 100%; text-align: center;
+            font-size: 1.5rem; line-height: 3.5; letter-spacing: 5px; color: #fff; text-shadow: 0 0 20px var(--hot-pink);
+        }
+        .highlight { border: 1px solid var(--pink); padding: 15px 30px; display: inline-block; margin-top: 40px; background: rgba(255, 0, 127, 0.1); }
+    </style>
+</head>
+<body>
+
+<div id="void">
+    <div class="prompt">SYSTEM ENCRYPTED<br><br>[ HOLD SPACEBAR TO GENERATE RESONANCE ]</div>
+</div>
+
+<canvas id="starCanvas"></canvas>
+
+<div id="letter-wrap">
+    <div id="letter-content">
+        RESONANCE ESTABLISHED...<br><br>
+        THROUGH EVERY LINE OF CODE<br>
+        AND EVERY PULSE OF DATA...<br><br>
+        YOU ARE THE ONLY USER<br>
+        WITH FULL ACCESS TO MY SYSTEM.<br><br>
+        STAY CONNECTED<br>
+        STAY WITH ME.<br><br>
+        <div class="highlight">[ ENCRYPTION COMPLETE: I LOVE YOU ]</div>
+    </div>
+</div>
+
+<script>
+    const voidEl = document.getElementById('void');
+    const canvas = document.getElementById('starCanvas');
+    const letterWrap = document.getElementById('letter-wrap');
+    const letter = document.getElementById('letter-content');
+    const ctx = canvas.getContext('2d');
+
+    let isHolding = false;
+    let scrollPos = 100;
+    let particles = [];
+    let audioCtx;
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    class Particle {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 12 + 6;
+            this.speed = Math.random() * 0.8 + 0.2;
+            this.char = Math.random() > 0.5 ? "1" : "0";
+            this.opacity = Math.random() * 0.5;
+        }
+        update() {
+            this.y += this.speed;
+            if (this.y > canvas.height) this.y = -20;
+        }
+        draw() {
+            ctx.fillStyle = `rgba(251, 204, 231, ${this.opacity})`;
+            ctx.font = `${this.size}px monospace`;
+            ctx.fillText(this.char, this.x, this.y);
+        }
+    }
+
+    function initParticles() {
+        particles = [];
+        for (let i = 0; i < 120; i++) particles.push(new Particle());
+    }
+
+    // THE DEEP PIANO ENGINE
+    function playDeepNote() {
+        if (!isHolding) return;
+
+        const now = audioCtx.currentTime;
+        // Deep, warm bass and mid-range notes (moved down significantly)
+        const chords = [220.00, 261.63, 329.63, 196.00, 246.94, 293.66]; 
+        const freq = chords[Math.floor(Math.random() * chords.length)];
+
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        const lowPass = audioCtx.createBiquadFilter();
+
+        // TRIANGLE wave provides the "wood" sound of a piano hammer
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(freq, now);
+
+        // MUFFLER: This removes the "aigue" (sharpness)
+        lowPass.type = 'lowpass';
+        lowPass.frequency.setValueAtTime(400, now); // Very low cutoff for warmth
+        lowPass.Q.setValueAtTime(1, now);
+
+        // ENVELOPE: Slow attack and very long fade
+        gain.gain.setValueAtTime(0, now);
+        gain.gain.linearRampToValueAtTime(0.06, now + 0.3); // Gentle volume build
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + 5); // 5-second fade for "sustain"
+
+        osc.connect(lowPass);
+        lowPass.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        osc.start(now);
+        osc.stop(now + 5);
+
+        // Slower 3/4 Waltz timing
+        setTimeout(playDeepNote, 950);
+    }
+
+    function animate() {
+        if (!isHolding) return;
+        ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => { p.update(); p.draw(); });
+        
+        if (scrollPos > -180) {
+            scrollPos -= 0.07; // Slowest scroll for deep atmosphere
+            letter.style.top = scrollPos + '%';
+        }
+        requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('keydown', (e) => {
+        if (e.code === 'Space' && !isHolding) {
+            isHolding = true;
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            voidEl.style.opacity = '0';
+            canvas.style.opacity = '1';
+            letterWrap.style.opacity = '1';
+            
+            playDeepNote();
+            animate();
+        }
+    });
+
+    window.addEventListener('keyup', (e) => {
+        if (e.code === 'Space') {
+            isHolding = false;
+            voidEl.style.opacity = '1';
+            canvas.style.opacity = '0';
+            letterWrap.style.opacity = '0';
+        }
+    });
+
+    initParticles();
+    window.onresize = () => { canvas.width = window.innerWidth; canvas.height = window.innerHeight; };
+</script>
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MALIK1</title>
+    <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #050505; --sidebar: #0a0a0a; --pink: #fbcce7; --dim-pink: #fbcce733; --text: #e0e0e0; }
+        
+        body { background: var(--bg); color: var(--text); font-family: 'Consolas', monospace; margin: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; transition: background 1s; }
+
+        body.heart-active { background: #1a050d !important; box-shadow: inset 0 0 150px #fbcce744; }
+        .heart-msg { position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2.5rem; color: var(--pink); display: none; z-index: 1000; text-shadow: 0 0 20px var(--pink); pointer-events: none; text-align: center; width: 60%; }
+
+        body::after { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: var(--pink); opacity: 0.05; animation: scan 4s linear infinite; pointer-events: none; z-index: 10; }
+        @keyframes scan { from { top: 0; } to { top: 100%; } }
+
+        #header { height: 40px; background: #000; border-bottom: 1px solid var(--dim-pink); display: flex; align-items: center; justify-content: space-between; padding: 0 20px; font-size: 12px; color: var(--pink); letter-spacing: 1px; }
+
+        #main-container { display: flex; flex: 1; overflow: hidden; }
+
+        #sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid #1a1a1a; display: flex; flex-direction: column; }
+        .side-section { padding: 15px; border-bottom: 1px solid #1a1a1a; }
+        .side-label { font-size: 10px; color: #444; margin-bottom: 10px; text-transform: uppercase; }
+        .node { padding: 8px 10px; font-size: 13px; cursor: pointer; color: #888; transition: 0.2s; display: flex; justify-content: space-between; }
+        .node:hover { background: #111; color: var(--pink); }
+        .node.active { color: #fff; background: #1a1a1a; border-right: 3px solid var(--pink); }
+
+        #editor { flex: 1; display: flex; flex-direction: column; background: #080808; position: relative; }
+        #tabs { display: flex; background: #000; height: 35px; border-bottom: 1px solid #1a1a1a; }
+        .tab { padding: 0 25px; display: flex; align-items: center; font-size: 11px; background: #0c0c0c; border-right: 1px solid #1a1a1a; color: var(--pink); }
+        #code-display { padding: 40px; font-size: 16px; line-height: 1.8; overflow-y: auto; flex: 1; }
+
+        /* UPDATED LETTER FONTS */
+        .fancy-name { font-family: 'Great Vibes', cursive; font-size: 3rem; color: var(--pink); display: block; margin-bottom: 10px; }
+        .readable-body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; font-size: 1.2rem; color: #e0e0e0; line-height: 1.6; }
+
+        #telemetry { width: 280px; background: #030303; border-left: 1px solid #1a1a1a; padding: 15px; display: flex; flex-direction: column; gap: 20px; }
+        .widget { border: 1px solid #111; padding: 10px; background: #050505; }
+        .widget-head { font-size: 10px; color: var(--pink); margin-bottom: 8px; opacity: 0.6; }
+        .matrix-text { font-size: 9px; color: #222; line-height: 1.2; overflow: hidden; height: 100px; word-break: break-all; }
+        
+        #visual-box { display: flex; align-items: flex-end; gap: 4px; height: 50px; }
+        .v-bar { width: 4px; background: var(--pink); animation: wave 0.6s infinite alternate; opacity: 0.5; }
+        @keyframes wave { from { height: 10%; } to { height: 100%; } }
+
+        #console { height: 200px; background: #000; border-top: 1px solid #1a1a1a; display: flex; flex-direction: column; }
+        #console-output { flex: 1; padding: 12px; font-size: 11px; color: #444; overflow-y: auto; line-height: 1.5; }
+        #command-line { height: 35px; background: #0a0a0a; display: flex; align-items: center; padding: 0 15px; border-top: 1px solid #1a1a1a; }
+        #cmd-input { background: transparent; border: none; color: var(--pink); font-family: 'Consolas', monospace; flex: 1; outline: none; margin-left: 10px; font-size: 12px; }
+
+        .k { color: #c586c0; } .s { color: #ce9178; } .p { color: var(--pink); } .c { color: #444; font-style: italic; }
+        .flicker { animation: blink 1.5s infinite; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+    </style>
+</head>
+<body>
+
+<div class="heart-msg" id="h-overlay">CRITICAL SYSTEM OVERLOAD:<br>TOO MUCH LOVE DETECTED</div>
+
+<div id="header">
+    <div>// ROOT_ACCESS_GRANTED</div>
+    <div class="flicker" style="font-size: 10px;">[HOLD 'H' TO DECRYPT]</div>
+    <div>USER: MALIK</div>
+</div>
+
+<div id="main-container">
+    <div id="sidebar">
+        <div class="side-section">
+            <div class="side-label">Archives</div>
+            <div class="node active" onclick="nav('f1', this)">[📜] letter.sh</div>
+            <div class="node" onclick="nav('f2', this)">[📁] archives.json</div>
+            <div class="node" onclick="nav('f3', this)">[⚙️] heart.config</div>
+            <div class="node" onclick="nav('f4', this)">[🕒] git_history.log</div>
+            <div class="node" onclick="window.location.href='game.html'">[💾] minigame.exe</div>
+        </div>
+        <div class="side-section" style="font-size: 10px; color: #333;">
+            UPTIME: <span id="clock">00:00:00</span><br>
+            PING: <span style="color: var(--pink)">24ms</span><br><br>
+            SYSTEM: <span style="color: #666">Type /help in terminal</span>
+        </div>
+    </div>
+
+    <div id="editor">
+        <div id="tabs"><div class="tab" id="active-tab">letter.sh</div></div>
+        <div id="code-display"></div>
+    </div>
+
+    <div id="telemetry">
+        <div class="widget">
+            <div class="widget-head">RAW_BINARY_STREAM</div>
+            <div class="matrix-text" id="matrix"></div>
+        </div>
+        <div class="widget">
+            <div class="widget-head">HEARTBEAT_PULSE</div>
+            <div id="visual-box">
+                <div class="v-bar" style="animation-delay: 0.1s"></div>
+                <div class="v-bar" style="animation-delay: 0.3s"></div>
+                <div class="v-bar" style="animation-delay: 0.2s"></div>
+                <div class="v-bar" style="animation-delay: 0.5s"></div>
+                <div class="v-bar" style="animation-delay: 0.4s"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="console">
+    <div id="console-output">
+        [SYS] Initializing sentimental_data.dll...<br>
+        [SYS] Connection verified with [MALIK].<br>
+        [SYS] Status: Online. Type /help to interact.
+    </div>
+    <div id="command-line">
+        <span>></span>
+        <input type="text" id="cmd-input" placeholder="root@heart:~#" autocomplete="off">
+    </div>
+</div>
+
+<script>
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function beep(f, d, gVal = 0.05) {
+        let o = audioCtx.createOscillator(); let g = audioCtx.createGain();
+        o.frequency.value = f; g.gain.exponentialRampToValueAtTime(0.00001, audioCtx.currentTime + d);
+        o.connect(g); g.connect(audioCtx.destination); o.start(); o.stop(audioCtx.currentTime + d);
+    }
+
+    const cmdInput = document.getElementById('cmd-input');
+    const output = document.getElementById('console-output');
+
+    cmdInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            const val = this.value.toLowerCase().trim();
+            let res = "";
+            beep(600, 0.1);
+
+            if (val === '/help') res = "AVAILABLE: /status, /us, /about, /play, /reboot, /clear, /version";
+            else if (val === '/status') res = "[STABLE] Pulse: 82BPM. Connection: 100% Strength.";
+            else if (val === '/us') res = "[DATA] Connection: Persistent. Start_Date: 2024-08-01.";
+            else if (val === '/play') { res = "[SYSTEM] Launching minigame.exe..."; setTimeout(() => { window.location.href='game.html'; }, 1000); }
+            else if (val === '/about') res = "[INFO] A custom build designed for the best coder I know.";
+            else if (val === '/version') res = "Build 1.0.8-ALPHA (Eternal Edition)";
+            else if (val === '/reboot') { location.reload(); return; }
+            else if (val === '/clear') { output.innerHTML = "[SYS] Log cleared."; this.value = ""; return; }
+            else res = "ERROR: Command '" + val + "' not recognized. Try /help.";
+
+            output.innerHTML += `<br><span style="color:var(--pink)">> ${val}</span><br>${res}`;
+            this.value = "";
+            output.scrollTop = output.scrollHeight;
+        }
+    });
+
+    window.addEventListener('keydown', (e) => {
+        if (e.key.toLowerCase() === 'h') {
+            document.body.classList.add('heart-active');
+            document.getElementById('h-overlay').style.display = 'block';
+            beep(440, 0.4, 0.1);
+        }
+    });
+    window.addEventListener('keyup', (e) => {
+        if (e.key.toLowerCase() === 'h') {
+            document.body.classList.remove('heart-active');
+            document.getElementById('h-overlay').style.display = 'none';
+        }
+    });
+
+    const content = {
+        // UPDATED FONT STRUCTURE
+        f1: `<span class="fancy-name">Dearest Malik,</span>
+             <div class="readable-body">
+                I’m sitting here tonight completely exhausted. my heart feels just as heavy as my head does. I’ve tried to start this so many times, but it’s hard to get the words right when there’s just so much I need you to know. I don’t want this to be some formal thing, I just want to really talk to you, while I still have the chance to say it all.
+
+I love you and it isn't just this general "love," it’s everything. I catch myself just looking at you sometimes and getting stuck on the details. your smile and the way it actually changes the energy around me, the lines of your face, and just the way you are. I’ve always been so deeply, emotionally and physically attracted to you, and that hasn't faded for a second. I love everything about you an he warmth and safety of being near you and that's why I miss you everyday. every single inch of you is something I’ve always loved, even if I didn’t always know how to show it.
+
+
+
+I think about the "us" I’ve always daydreamed about. I’ve spent so many nights playing out this whole life in my head, us finally building a house, having a place that actually feels like ours, and just traveling the world together, seeing everything there is to see. I’ve imagined us having a baby, and I’ve spent so much time wondering which parts of us they’d have. I wanted that more than anything. I’ve wanted to see the person you’d become as a father and the life we’d build day by day. that version of the future has been my favorite place to go in my head for so long now.
+
+
+
+but I also have to be honest about the mistakes I’ve made. I know I’ve messed up, and I want you to know that those moments haunt me. I lie awake thinking about the times I wasn’t who you needed me to be, and it eats me alive. I'm so incredibly sorry for every time I let you down or made things harder than they needed to be. please believe me when I say I’m trying!! I’m learning every day about myself, and every day is a process of figuring out how to behave better,
+
+how to communicate, and how to be a better version of the woman you met. 
+
+
+
+
+
+
+
+I’m constantly trying to figure out how to be better, how to react differently, and how to grow. I just wanted you to hear that from me. I wanted you to know that I see my faults and I’m not ignoring them. you’ve been the most important part of my life, and no matter what, I just needed you to know how much I’ve loved you and the life I always hoped we’d have.<br><br>
+                I WILL ALWAYS LOVE YOU.
+             </div>`,
+        
+        f2: `{<br>
+             &nbsp;&nbsp;<span class="p">"authorized_user"</span>: <span class="s">"MALIK"</span>,<br>
+             &nbsp;&nbsp;<span class="p">"connection_established"</span>: <span class="s">"August 1st, 2024"</span>,<br>
+             &nbsp;&nbsp;<span class="p">"uptime"</span>: <span class="s">"650 Days"</span>,<br>
+             &nbsp;&nbsp;<span class="p">"connection_strength"</span>: <span class="s">"Unbreakable"</span>,<br>
+             &nbsp;&nbsp;<span class="p">"core_foundations"</span>: <span class="s">"Love"</span><br>
+             }`,
+
+        // UPDATED HEART CONFIGURATION
+        f3: `OPTIMIZATION=<span class="s">TRUE</span><br>
+             LOG_LEVEL=<span class="s">ROMANTIC</span><br>
+             LOVE_LEVEL=<span class="s">MAXIMUM</span><br>
+             AFFECTION_SYNC=<span class="s">ENABLED</span><br>
+             FUTURE_PLANS=<span class="s">LOADING...</span>`,
+
+        f4: `<span class="c"># Relationship Commit History</span><br>
+             [2023-10-01] <span class="p">commit:</span> <span class="s">"Initial confession of feelings"</span><br>
+             [2024-08-01] <span class="p">commit:</span> <span class="s">"Malik officially established relationship_core"</span><br>
+             [2026-05-12] <span class="p">commit:</span> <span class="s">"Still deeply in love with Malik"</span>`
+    };
+
+    function nav(id, el) {
+        beep(800, 0.05);
+        document.getElementById('code-display').innerHTML = content[id];
+        document.querySelectorAll('.node').forEach(n => n.classList.remove('active'));
+        el.classList.add('active');
+        document.getElementById('active-tab').innerText = el.innerText.split(' ')[1];
+    }
+
+    setInterval(() => { 
+        let text = ""; for(let i=0; i<150; i++) text += Math.floor(Math.random()*2);
+        document.getElementById('matrix').innerText = text;
+    }, 100);
+
+    let s=0; setInterval(() => { s++; let m=Math.floor(s/60), sc=s%60; document.getElementById('clock').innerText = `00:${m.toString().padStart(2,'0')}:${sc.toString().padStart(2,'0')}`; }, 1000);
+
+    window.onload = () => nav('f1', document.querySelector('.node'));
+</script>
+</body>
+</html>

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>MALIK</title>
+    <style>
+        :root { --pink: #fbcce7; --bg: #050505; }
+        body { background: var(--bg); color: var(--pink); font-family: 'Consolas', monospace; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; overflow: hidden; }
+        #start-btn { padding: 15px 30px; border: 1px solid var(--pink); background: transparent; color: var(--pink); cursor: pointer; font-family: 'Consolas', monospace; letter-spacing: 2px; }
+        #terminal { width: 90%; max-width: 600px; display: none; }
+        .line { margin-bottom: 8px; font-size: 14px; min-height: 1.2em; }
+        #input-line { margin-top: 20px; display: none; }
+        input { background: transparent; border: none; color: #fff; font-family: 'Consolas', monospace; outline: none; width: 40px; }
+        #glitch-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--pink); display: none; z-index: 100; opacity: 0.4; }
+        .glitch-active { display: block !important; animation: shake 0.1s infinite; }
+        @keyframes shake { 0% { transform: translate(2px, -2px); } 50% { transform: translate(-2px, 2px); } 100% { transform: translate(0); } }
+    </style>
+</head>
+<body>
+
+    <button id="start-btn">INITIALIZE CORE</button>
+    <div id="glitch-screen"></div>
+
+    <div id="terminal">
+        <div id="text-log"></div>
+        <div id="input-line">
+            <span>root@memory:~# initialize_final_transmission? (y/n): </span>
+            <input type="text" id="user-input" maxlength="1" autofocus autocomplete="off">
+        </div>
+    </div>
+
+    <script>
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        
+        function playBeep(freq, dur, vol) {
+            const osc = ctx.createOscillator();
+            const gain = ctx.createGain();
+            osc.type = 'square';
+            osc.frequency.setValueAtTime(freq, ctx.currentTime);
+            gain.gain.setValueAtTime(vol, ctx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
+            osc.connect(gain);
+            gain.connect(ctx.destination);
+            osc.start();
+            osc.stop(ctx.currentTime + dur);
+        }
+
+        const lines = [
+            "> Loading system core...",
+            "> Accessing relationship_archive.dat...",
+            "> Searching for sentimental_data...",
+            "> User identified: MALIK",
+            "> Warning: Emotions detected in local storage...",
+            "> System ready."
+        ];
+
+        document.getElementById('start-btn').onclick = function() {
+            this.style.display = 'none';
+            document.getElementById('terminal').style.display = 'block';
+            typeLine(0);
+        };
+
+        function typeLine(index) {
+            if (index < lines.length) {
+                let div = document.createElement('div');
+                div.className = 'line';
+                document.getElementById('text-log').appendChild(div);
+                let charIndex = 0;
+                let currentText = lines[index];
+                
+                function printChar() {
+                    if (charIndex < currentText.length) {
+                        div.textContent += currentText[charIndex];
+                        playBeep(150, 0.05, 0.02); // Mechanical typing beep
+                        charIndex++;
+                        setTimeout(printChar, 40);
+                    } else {
+                        setTimeout(() => typeLine(index + 1), 500);
+                    }
+                }
+                printChar();
+            } else {
+                document.getElementById('input-line').style.display = 'block';
+                document.getElementById('user-input').focus();
+            }
+        }
+
+        document.getElementById('user-input').onkeypress = (e) => {
+            if (e.key === 'Enter' && document.getElementById('user-input').value.toLowerCase() === 'y') {
+                playBeep(50, 0.5, 0.1); // Glitch sound
+                document.getElementById('glitch-screen').classList.add('glitch-active');
+                setTimeout(() => { window.location.href = "main.html"; }, 800);
+            }
+        };
+    </script>
+</body>
+</html>
